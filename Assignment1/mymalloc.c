@@ -5,7 +5,6 @@
 
 void* mymalloc(size_t size,char* FILE,int line){
 printf("\n%d\n", size);
-//printf("\nPUTERRORHERE->FILE: %s ->LINE:%d",FILE,line);
 if (size<1){
 printf("\nerror:(need size>=1)\nin %s at line%d",FILE,line);
 return NULL;
