@@ -28,10 +28,6 @@ k=k+1;
 */
 
 
-//printf("\n\nEntered MyMalloc");
-//printf("%d",mem[268]);
-//printf("%d",mem[7]);
-//mem[0]=size;
 unsigned short sizeT=(unsigned short) size; 
 int j=0;
 int gate=1;
@@ -51,95 +47,66 @@ gate=1;
 small=0;
 large=0;
 calcSize=0;
-	if (j>=4096){
+if (j>=4096){
 	printf("cool");
 	break;
-	}
-//printf("\n\n\nnextMemCheck:%d",mem[j+1]);
-
-//printf("\nj:%d{}memJ:%d\n",j,mem[j]);
-if (mem[j]!=0){
-small=mem[j];
-//printf("\nsaml2:%d",small);
-if ((char)small<0){
-small=small+256;
-//printf("\nsaml:%d",small);
 }
-large=mem[j+1];
-large=large<<8;
-calcSize=small+large;
-//printf("\nsmall:%d\nlarge:%d\ncalcSize:%d\nj:%d", small, large, calcSize, j);
-j=j+2+calcSize;
-//printf("jJumpFront:%d",j);
-//possible>4096?
-continue;
+if (mem[j]!=0){
+	small=mem[j];
+	if ((char)small<0){
+		small=small+256;
+	}
+	large=mem[j+1];
+	large=large<<8;
+	calcSize=small+large;
+
+	j=j+2+calcSize;
+	continue;
 }
 
 	if (mem[j]==0){
 	//lookForSpace
-	count=0;
-	start=j;
-	//printf("size?%d",sizeT);
-	//printf("\n\nstart:%d",start);
-	while(count<(sizeT+2)){
-		//printf("\ncount:%d",count);
-		if (j>=4096){
-		printf("cool");
-		break;
-		}	
-	//printf("%dsozeT:%d",count,sizeT+2);
-
-	//printf("\nmemj:%d",mem[j]);
-
-	//MIGHT NEVER REACH?
+		count=0;
+		start=j;
+		while(count<(sizeT+2)){
+			if (j>=4096){
+				printf("cool");
+				break;
+			}	
 			if(mem[j]!=0){
-			gate=0;			
-	//printf("\n\nj:%d\nchecker:%d\n\n",j,mem[j]);
-			small=mem[j];
-			large=mem[j+1];
-	//printf("\n\nlarge:%d",large);
-			large=large<<8;
-			calcSize=small+large;
-			//printf("\nsmall:%d\nlarge:%d\ncalcSize:%d\nj:%d", small, large, calcSize, j);
-			j=j+2+calcSize;
-			//printf("jJump?:%d",j);
-			break;
+				gate=0;			
+				small=mem[j];
+				large=mem[j+1];
+				large=large<<8;
+				calcSize=small+large;
+				j=j+2+calcSize;
+				break;
 			}
-		j=j+1;
-		count=count+1;	
+			j=j+1;
+			count=count+1;	
 		}
-	if (gate==0){
-	continue;
-	}
+		if (gate==0){
+			continue;
+		}
 	}
 	if(j>4096){
 	break;	
 	}
-
-	//printf("\ncount:%d sizeT:%d",count,sizeT);
 	if (count==(sizeT+2)){
-
-	//soft as a shell
-	if(mem[start+8]!=0 || mem[start+9]!=0 || mem[start+10]!=0){
-	l1=mem[start+8];
-	o2=mem[start+9];
-	l2=mem[start+10];
-	}
-	large=sizeT>>8;
-	small=sizeT<<8;
-	small=small>>8;
-
-
-	//printf("\nsmall:%d\nlarge:%d",small,large);
-	//printf("\nfoundBlock!");
+	//store data in order to rewrite over data that was shifted if these positions changed
+		if(mem[start+8]!=0 || mem[start+9]!=0 || mem[start+10]!=0){
+			l1=mem[start+8];
+			o2=mem[start+9];
+			l2=mem[start+10];
+		}
+		large=sizeT>>8;
+		small=sizeT<<8;
+		small=small>>8;
 	mem[start]=small;
 	mem[start+1]=large;
-	//printf("\n\nsmallInMem:%d",mem[start]);
-	//printf("\nlargeInMem:%d",mem[start+1]);
 	
-	//THE KEY
+	//THE KEY; use LL to hold data 
 	safe=start+1;
-	//printf("\nsmalllargestartsafe%d,%d,%d,%d",small,large,start,safe);
 	Node small1={small};
 	*(Node*)(mem+start)=small1;
 	Node* smallPtr=(Node*)(mem+start);
@@ -148,14 +115,11 @@ continue;
 	*(Node*)(mem+safe)=large1;
 	Node* largePtr=(Node*)(mem+safe);
 	smallPtr->next=largePtr;
-
-	//printf("\n%p;;\n%p",smallPtr,largePtr);
-	
-	//HARD AS A ROCK
+	//return to old data after shift
 	if(l1==0 && l2==0 && o2==0){
-	mem[start+8]=0;
-	mem[start+9]=0;
-	mem[start+10]=0;
+		mem[start+8]=0;
+		mem[start+9]=0;
+		mem[start+10]=0;
 	}
 	if(l1!=0 || l2!=0 || o2!=0){
 		mem[start+8]=l1;
@@ -165,29 +129,15 @@ continue;
 	return smallPtr;
 	}
 }
-
+//only reach here if not enough space
 printf("\nerror:(NotEnoughSpace)\nin %s at line%d",FILE,line);
-//maybe add helpul print statement about 
-//space left
 
 return NULL;
 }
 
 
 void myfree(void* p,char* file,int line){
-//printf("\n\nEnetered MyFree");
-//printf("memoryCheck:%p",mem[0]);
-//printf("\n%d",mem[0]);
 printf("\n\nfree start");
-/*
-int k=0;
-char yup='0';
-while (k<100){
-yup=mem[k];
-printf(".%d",yup);
-k=k+1;
-}
-*/
 
 
 if (p==NULL){
@@ -209,57 +159,45 @@ unsigned short small=0;
 unsigned short large=0;
 while (i<4096){
 	if (p==&mem[i]){
-	//FREE!!!
-	if (mem[i]==0){
-	printf("\nerror:(Trying to free something we've freed before)\nin %s at line%d",file,line);
-	return;
-	}
-	//printf("FreeThisBitch");
-	//printf("\n%d",mem[i]);
-	//findSize
-	small=mem[i];
-	large=mem[i+1];
-	if ((char) small< 0){
-	small=small+256;
-	//printf("\n\nsmallRN:%d",small);
-	}
-	//printf("\nlargeInMemFree:%d",mem[i+1]);
-	//printf("\nlargeFree:%d",large);
-	large=large<<8;
-	sizeT=small+large;
-	//printf("\nsmall:%d\nlarge:%d\nsizeT:%d",small,large,sizeT);
-	temp=sizeT+2;
-	q=i;
-	count2=0;
-		while (temp>0){
-		mem[i]=0;
-		i=i+1;
-		temp=temp-1;	\
-		count2=count2+1;
+		//FREE!!!
+		if (mem[i]==0){
+			printf("\nerror:(Trying to free something we've freed before)\nin %s at line%d",file,line);
+			return;
 		}
-//printf("\n\nFREEDCOUNT:%d\n\n",count2);
-	//printf("\nfreed:%d\n%d",i,mem[q]);
-	break;
-	}
+		//findSize
+		small=mem[i];
+		large=mem[i+1];
+		if ((char) small< 0){
+			small=small+256;
+		}
+		large=large<<8;
+		sizeT=small+large;
+		temp=sizeT+2;
+		q=i;
+		count2=0;
+			while (temp>0){
+				mem[i]=0;
+				i=i+1;
+				temp=temp-1;	\
+				count2=count2+1;
+			}
+			break;
+		}
 
 
 		if (mem[i]!=0){
 		//find Size and skip
-		small=mem[i];
-		large=mem[i+1];
-		large=large<<8;
-		sizeT=small+large;
-		i=i+sizeT;
-		//printf("\nfreeJump-i:%d\nsizeT:%d",i,sizeT);	
-		continue;	
+			small=mem[i];
+			large=mem[i+1];
+			large=large<<8;
+			sizeT=small+large;
+			i=i+sizeT;
+			continue;	
 		}
 		if (mem[i]==0){
-		i=i+1;		
+			i=i+1;		
 		}
 }
-//print what we change
-
-//ErrorChecks
 
 return;
 }
