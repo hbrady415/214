@@ -25,5 +25,5 @@ Assignment 3:
 This project asked us to create both a client and a server, specifically a client and server capable of handling a simplified version of a email service.  The client was in charge of making sure the user
 sent valid commands to the server as well as sending correct commands to the server.  
 
-The server needed to be able to create message boxes with names, delete them, open them , close them, and put messages into the boxes.since this was a simplified client/server
+The server needed to be able to create message boxes with names, delete them, open them , close them, and put messages into the boxes.  Multiple boxes could not be opened by multiple users simultaneously.  Since this was a simplified client/server
 project, boxes could not be created within each other and any messages put into the boxes were stored in a queue and deleted upon being sent from the server to the client.
